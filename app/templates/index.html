@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>X Startup Idea Finder</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>X Startup Idea Finder</h1>
+      <p class="subtitle">
+        Discover real problems people are asking to be solved on X. Combine
+        keywords with curated prompts like “I'd pay for” and “Someone please
+        build” to uncover validated startup ideas.
+      </p>
+    </header>
+
+    <main>
+      <section class="search-card">
+        <form method="get" class="search-form">
+          <label for="keywords">Keywords (comma separated)</label>
+          <input
+            type="text"
+            id="keywords"
+            name="keywords"
+            value="{{ ', '.join(keywords) }}"
+            placeholder="AI, marketing, design"
+          />
+          <button type="submit">Search</button>
+        </form>
+        {% if query %}
+        <p class="query-preview">
+          <span>Generated X search query:</span>
+          <code>{{ query }}</code>
+        </p>
+        {% endif %}
+        {% if error %}
+        <p class="error-message">{{ error }}</p>
+        {% endif %}
+      </section>
+
+      {% if results %}
+      <section class="results">
+        <h2>Top matches</h2>
+        <ul class="tweet-list">
+          {% for tweet in results %}
+          <li class="tweet-card">
+            <div class="tweet-meta">
+              <span class="tweet-user">{{ tweet.displayname }} (@{{ tweet.username }})</span>
+              <span class="tweet-date">{{ tweet.date.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+            </div>
+            <p class="tweet-content">{{ tweet.content }}</p>
+            <div class="tweet-stats">
+              <span>❤️ {{ tweet.like_count }}</span>
+              <span>🔁 {{ tweet.retweet_count }}</span>
+              <span>💬 {{ tweet.reply_count }}</span>
+            </div>
+            <a class="tweet-link" href="{{ tweet.url }}" target="_blank" rel="noopener"
+              >View on X</a
+            >
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% elif query and not error %}
+      <section class="no-results">
+        <p>No results found yet. Try different keywords or broaden your search.</p>
+      </section>
+      {% endif %}
+    </main>
+
+    <footer>
+      <p>
+        Built for founders looking for validated ideas. Queries automatically
+        include <code>-filter:links -filter:retweets -filter:replies</code> to focus on original
+        posts.
+      </p>
+    </footer>
+  </body>
+</html>
